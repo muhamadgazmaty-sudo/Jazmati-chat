@@ -1,4 +1,4 @@
-name: Build Android APK Success Final
+name: Build Android Last Hope
 on:
   push:
     branches:
@@ -22,29 +22,19 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install & Clean Dependencies
+      - name: Install & Reset
+        # سنقوم بحذف أي ملفات أندرويد قديمة تسبب التعارض
         run: |
-          npm init -y
-          npm install --force @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications
+          npm install --force
+          rm -rf android
           mkdir -p www
 
-      - name: Reconstruction of Android Platform
-        # مسح شامل للمجلد القديم لضمان عدم وجود تعارضات سابقة
+      - name: Create Fresh Android
+        # إنشاء هيكل أندرويد جديد متوافق مع المكتبات الحالية
         run: |
-          rm -rf android
           npx cap add android
-          mkdir -p android/app/
           cp google-services.json android/app/
           npx cap sync android
-
-      - name: Force Fix Android Configurations
-        # تعديل الإصدارات والأذونات برمجياً لتجنب خطأ Manifest Merger
-        run: |
-          sed -i 's/compileSdkVersion = 30/compileSdkVersion = 33/g' android/variables.gradle
-          sed -i 's/targetSdkVersion = 30/targetSdkVersion = 33/g' android/variables.gradle
-          sed -i 's/minSdkVersion = 21/minSdkVersion = 22/g' android/variables.gradle
-          # إضافة إذن الإشعارات الإجباري لأندرويد 13 فما فوق
-          sed -i '/<application/i \    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />' android/app/src/main/AndroidManifest.xml
 
       - name: Final Build
         run: |
@@ -52,9 +42,9 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
-      - name: Export APK
+      - name: Download APK
         uses: actions/upload-artifact@v4
         with:
-          name: Jazmati-Chat-Final-Ready
+          name: Jazmati-Final-Build
           path: android/app/build/outputs/apk/debug/app-debug.apk
  
