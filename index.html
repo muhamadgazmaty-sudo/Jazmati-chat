@@ -1483,6 +1483,33 @@ window.addEventListener('popstate', function(e){
   if(chatActive){leaveRoom();return;}
   // 5. On rooms screen → minimize app (do nothing, let default behavior)
 });
+// --- كود دعم إشعارات أندرويد (أضفه هنا) ---
+async function enablePushNotifications() {
+    try {
+        const { PushNotifications } = capacitorExports.Plugins;
+
+        // 1. طلب إذن المستخدم
+        let permStatus = await PushNotifications.checkPermissions();
+        if (permStatus.receive === 'prompt') {
+            permStatus = await PushNotifications.requestPermissions();
+        }
+
+        // 2. التسجيل في Firebase للحصول على التوكن
+        if (permStatus.receive === 'granted') {
+            await PushNotifications.register();
+        }
+
+        // 3. الاستماع لوصول إشعار والتفاعل معه
+        PushNotifications.addListener('pushNotificationReceived', (notification) => {
+            alert("إشعار جديد: " + notification.title + "\n" + notification.body);
+        });
+    } catch (e) {
+        console.log("إشعارات: تعمل فقط داخل تطبيق الأندرويد وليس المتصفح.");
+    }
+}
+
+// تشغيل الوظيفة فوراً
+enablePushNotifications();
 
 // Make sure screens use the patched showScreen
 </script>
