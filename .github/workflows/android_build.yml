@@ -11,6 +11,13 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v4
 
+      - name: Setup Java 17
+        # هذا السطر هو المفتاح لحل مشكلة Build Failed الأخيرة
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -29,8 +36,8 @@ jobs:
           cp google-services.json android/app/
           npx cap sync android
 
-      - name: Upgrade Android Build Tools
-        # هذا السطر يحل مشكلة فشل التجميع عبر ترقية الإصدارات برمجياً
+      - name: Final Build Optimization
+        # ترقية إصدارات أندرويد لتتوافق مع الإشعارات
         run: |
           sed -i 's/compileSdkVersion = 30/compileSdkVersion = 33/g' android/variables.gradle
           sed -i 's/targetSdkVersion = 30/targetSdkVersion = 33/g' android/variables.gradle
@@ -46,4 +53,3 @@ jobs:
         with:
           name: Jazmati-Final-Work
           path: android/app/build/outputs/apk/debug/app-debug.apk
- 
