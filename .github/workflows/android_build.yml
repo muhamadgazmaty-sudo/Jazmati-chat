@@ -1,4 +1,4 @@
-name: Build Android APK with Notifications Fix
+name: Build Android APK with Notifications Fixed
 on:
   push:
     branches:
@@ -16,10 +16,10 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install Dependencies
+      - name: Force Install Dependencies
         run: |
+          npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications
-          npm install
 
       - name: Create Dummy WWW Dir
         run: mkdir -p www
@@ -27,12 +27,12 @@ jobs:
       - name: Add Android Platform
         run: npx cap add android || true
 
-      - name: Sync Capacitor (The Fix)
-        # هذا السطر هو الأهم لأنه ينقل كود الإشعارات لقلب نظام الأندرويد
-        run: npx cap sync android
-
       - name: Copy Firebase Config
+        # هذا السطر مهم جداً لكي يعمل Firebase
         run: cp google-services.json android/app/ || echo "File missing!"
+
+      - name: Sync Capacitor
+        run: npx cap sync android
 
       - name: Build APK
         run: |
@@ -42,5 +42,6 @@ jobs:
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Jazmati-Chat-Final-Fix
+          name: Jazmati-Notifications-Final
           path: android/app/build/outputs/apk/debug/app-debug.apk
+ 
