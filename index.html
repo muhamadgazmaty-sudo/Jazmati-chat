@@ -1483,33 +1483,39 @@ window.addEventListener('popstate', function(e){
   if(chatActive){leaveRoom();return;}
   // 5. On rooms screen → minimize app (do nothing, let default behavior)
 });
-// --- كود دعم إشعارات أندرويد (أضفه هنا) ---
 async function enablePushNotifications() {
     try {
-        const { PushNotifications } = capacitorExports.Plugins;
+        const { PushNotifications } = Capacitor.Plugins;
 
-        // 1. طلب إذن المستخدم
+        // 1. فحص حالة الإذن الحالية
         let permStatus = await PushNotifications.checkPermissions();
+        
+        // 2. إذا لم يتم الطلب من قبل، اطلبه الآن (هذا ما سيظهر النافذة)
         if (permStatus.receive === 'prompt') {
             permStatus = await PushNotifications.requestPermissions();
         }
 
-        // 2. التسجيل في Firebase للحصول على التوكن
+        // 3. إذا وافق المستخدم، قم بتسجيل الجهاز
         if (permStatus.receive === 'granted') {
             await PushNotifications.register();
+            console.log("تم التسجيل بنجاح");
+        } else {
+            alert("يرجى السماح بالإشعارات من إعدادات التطبيق لتلقي الرسائل");
         }
 
-        // 3. الاستماع لوصول إشعار والتفاعل معه
+        // الاستماع لوصول إشعار والتفاعل معه
         PushNotifications.addListener('pushNotificationReceived', (notification) => {
-            alert("إشعار جديد: " + notification.title + "\n" + notification.body);
+            alert("إشعار جديد: " + notification.title);
         });
+
     } catch (e) {
-        console.log("إشعارات: تعمل فقط داخل تطبيق الأندرويد وليس المتصفح.");
+        console.log("خطأ في تشغيل الإشعارات:", e);
     }
 }
 
-// تشغيل الوظيفة فوراً
-enablePushNotifications();
+// تشغيل الوظيفة فور تحميل الصفحة
+window.onload = enablePushNotifications;
+
 
 // Make sure screens use the patched showScreen
 </script>
