@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "471092953478",
+    "firebase_url": "https://studio-6564504918-48cd8-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "studio-6564504918-48cd8",
+    "storage_bucket": "studio-6564504918-48cd8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:471092953478:android:b9daf64a7ba24884a5ec07",
+        "android_client_info": {
+          "package_name": "com.muhamad.jazmatichat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0HWS1W2bYE3zM_2jWlMMFqvAsMD_4eLE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
