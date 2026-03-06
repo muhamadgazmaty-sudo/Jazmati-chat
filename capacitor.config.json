@@ -1,0 +1,9 @@
+{
+  "appId": "com.muhamad.jazmatichat",
+  "appName": "Jazmati Chat",
+  "webDir": "www",
+  "server": {
+    "url": "https://muhamadgazmaty-sudo.github.io/Jazmati-chat/",
+    "cleartext": true
+  }
+}
