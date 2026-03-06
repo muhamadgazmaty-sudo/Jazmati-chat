@@ -16,36 +16,34 @@ jobs:
         with:
           node-version: 18
 
-      - name: Force Install Dependencies
-        # تجاوز تعارض الإصدارات الذي ظهر سابقاً
+      - name: Install and Fix Permissions
+        # تثبيت المكتبات وإجبار النظام على قبول الإشعارات
         run: |
           npm init -y
           npm install --force @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications
-
-      - name: Create Structure
-        run: |
           mkdir -p www
-          npx cap add android || echo "Exists"
 
-      - name: Inject Firebase Config
+      - name: Add and Sync Android
         run: |
+          npx cap add android || echo "Exists"
           mkdir -p android/app/
           cp google-services.json android/app/
-
-      - name: Update Android Settings
-        # هذا الأمر يضيف صلاحية الإشعارات لملف النظام تلقائياً
-        run: |
           npx cap sync android
-          sed -i '/<application/i \    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />' android/app/src/main/AndroidManifest.xml
 
-      - name: Build APK
+      - name: Inject Push Notifications to AndroidManifest
+        # هذا السطر يحل مشكلة الـ Build Failed عبر إضافة الأذونات برمجياً
+        run: |
+          sed -i '/<\/header>/a \    <service android:name="com.capacitorjs.plugins.pushnotifications.MessagingService" android:exported="false"><intent-filter><action android:name="com.google.firebase.MESSAGING_EVENT" /></intent-filter></service>' android/app/src/main/AndroidManifest.xml
+
+      - name: Build Final APK
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
-      - name: Export APK
+      - name: Export APK Success
         uses: actions/upload-artifact@v4
         with:
-          name: Jazmati-Chat-Final
+          name: Jazmati-Chat-Ready
           path: android/app/build/outputs/apk/debug/app-debug.apk
+ 
