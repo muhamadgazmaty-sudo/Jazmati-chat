@@ -1,4 +1,4 @@
-name: Build Android APK Final Fix
+name: Build Android APK Final Force
 on:
   push:
     branches:
@@ -16,34 +16,40 @@ jobs:
         with:
           node-version: 18
 
-      - name: Clean and Install
+      - name: Essential Setup
+        # إنشاء ملف package.json إذا لم يكن موجوداً لضمان عمل التحميل
         run: |
-          rm -rf node_modules package-lock.json
+          npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications
 
-      - name: Create WWW Dir
-        run: mkdir -p www
-
-      - name: Reset Android Platform
-        # قمنا بإضافة أمر مسح المجلد القديم لضمان عدم وجود تعارض
+      - name: Prepare Workspace
+        # مسح شامل لأي مخلفات قديمة تسبب التعارض
         run: |
+          mkdir -p www
           rm -rf android
-          npx cap add android
+          rm -rf node_modules
+          npm install
 
-      - name: Inject Firebase Config
-        # نسخ الملف الذي تأكدنا من وجوده في الصورة الأخيرة
-        run: cp google-services.json android/app/
+      - name: Build Android Structure
+        # إضافة المنصة من الصفر
+        run: npx cap add android
 
-      - name: Sync and Build
+      - name: Inject Firebase Secret
+        # نسخ ملفك الموجود في الصورة 1000050505.jpg لمكانه الصحيح
+        run: |
+          mkdir -p android/app/
+          cp google-services.json android/app/
+
+      - name: Sync and Compile
+        # ربط الكود وتوليد ملف الـ APK
         run: |
           npx cap sync android
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: Export Application
         uses: actions/upload-artifact@v4
         with:
-          name: Jazmati-Final-Chat
+          name: Jazmati-Ultimate-App
           path: android/app/build/outputs/apk/debug/app-debug.apk
- 
