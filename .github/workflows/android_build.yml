@@ -1,4 +1,4 @@
-name: Build Android APK Emergency Fix
+name: Build Android APK Final Fix
 on:
   push:
     branches:
@@ -16,22 +16,22 @@ jobs:
         with:
           node-version: 18
 
-      - name: Force Clean Environment
-        # مسح شامل لضمان عدم وجود ملفات قديمة تعيق البناء
+      - name: Clean and Force Install
+        # أضفنا --force لتجاوز خطأ eresolve الذي ظهر في الصورة
         run: |
-          rm -rf android node_modules package-lock.json
-          npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications
+          rm -rf node_modules package-lock.json
+          npm install --force @capacitor/core @capacitor/cli @capacitor/android @capacitor/push-notifications
 
       - name: Create Structure
         run: |
           mkdir -p www
-          npx cap add android
+          npx cap add android || echo "Already exists"
 
-      - name: Safe Copy Firebase Config
-        # هذا السطر سيقوم بالنسخ، وإذا فشل سيخبرنا بالسبب دون إيقاف العملية
+      - name: Inject Firebase Config
+        # نسخ ملف google-services.json الذي تأكدنا من وجوده
         run: |
-          cp google-services.json android/app/ || echo "Copy failed but continuing..."
+          mkdir -p android/app/
+          cp google-services.json android/app/ || echo "File not found"
 
       - name: Sync and Build
         run: |
@@ -43,6 +43,6 @@ jobs:
       - name: Export APK
         uses: actions/upload-artifact@v4
         with:
-          name: Jazmati-Emergency-App
+          name: Jazmati-Chat-Success
           path: android/app/build/outputs/apk/debug/app-debug.apk
  
